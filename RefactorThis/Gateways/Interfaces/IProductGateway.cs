@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using RefactorThis.Models;
 
 namespace RefactorThis.Gateways.Interfaces
 {
     public interface IProductGateway
     {
-        Products GetProducts();
+        List<Product> GetProducts();
         Product Get(Guid id);
         int Save(Product product);
         int Update(Product product);

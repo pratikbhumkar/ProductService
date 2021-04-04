@@ -7,26 +7,25 @@ namespace RefactorThis.Gateways
 {
     public class ProductOptionsGateway: IProductOptionsGateway
     {
-        public ProductOptions GetAll()
+        public List<ProductOption> GetAll(Guid productId)
         {
-            ProductOptions productOptions = new ProductOptions();
-            productOptions.Items = new List<ProductOption>();
+            List<ProductOption> productOptions = new List<ProductOption>();
             var conn = Helpers.NewConnection();
             conn.Open();
             var cmd = conn.CreateCommand();
 
-            cmd.CommandText = $"select id from productoptions";
+            cmd.CommandText = $"select id from productoptions where productid = '{productId}' collate nocase";
 
             var rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
                 var id = Guid.Parse(rdr.GetString(0));
-                productOptions.Items.Add(Get(id));
+                productOptions.Add(Get(productId, id));
             }
             return productOptions;
         }
-
-        public ProductOption Get(Guid id)
+        
+        public ProductOption Get(Guid productId, Guid id)
         {
             ProductOption productOption = new ProductOption();
             productOption.IsNew = true;
@@ -34,12 +33,13 @@ namespace RefactorThis.Gateways
             conn.Open();
             var cmd = conn.CreateCommand();
 
-            cmd.CommandText = $"select * from productoptions where id = '{id}' collate nocase";
+            cmd.CommandText = $"select * from productoptions";
 
             var rdr = cmd.ExecuteReader();
             if (!rdr.Read())
                 return null;
 
+            productOption.Id = Guid.Parse(rdr["Id"].ToString());
             productOption.ProductId = Guid.Parse(rdr["ProductId"].ToString());
             productOption.Name = rdr["Name"].ToString();
             productOption.Description = (DBNull.Value == rdr["Description"]) ? null : rdr["Description"].ToString();

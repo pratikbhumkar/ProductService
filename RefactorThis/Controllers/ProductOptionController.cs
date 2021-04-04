@@ -19,7 +19,7 @@ namespace RefactorThis.Controllers
         {
             try
             {
-                var productOptions = _productOptionsService.GetProductOptions();
+                var productOptions = _productOptionsService.GetProductOptions(productId);
                 return Ok(productOptions);
             }
             catch (Exception e)
@@ -33,7 +33,7 @@ namespace RefactorThis.Controllers
         {
             try
             {
-                var productOption = _productOptionsService.GetProductOption(id);
+                var productOption = _productOptionsService.GetProductOption(productId,id);
                 return Ok(productOption);
             }
             catch (Exception e)

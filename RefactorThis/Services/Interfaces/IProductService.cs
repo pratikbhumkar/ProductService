@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using RefactorThis.Models;
 
 namespace RefactorThis.Services
 {
     public interface IProductService
     {
-        Products GetProducts();
+        List<Product> GetProducts();
         Product GetProduct(Guid id);
         int SaveProduct(Product product);
         int UpdateProduct(Guid id, Product product);

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using RefactorThis.Gateways;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Services;
+using RefactorThis.Services.Interfaces;
 
 namespace RefactorThis
 {
@@ -29,8 +30,10 @@ namespace RefactorThis
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IProductGateway, ProductGateway>();
+            services.AddScoped<IProductService, ProductService>(); 
+            services.AddScoped<IProductGateway, ProductGateway>(); 
+            services.AddScoped<IProductOptionsGateway, ProductOptionsGateway>();
+            services.AddScoped<IProductOptionsService, ProductOptionsService>();
             services.AddSwaggerGen();
         }
 

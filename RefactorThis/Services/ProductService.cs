@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RefactorThis.Gateways;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Models;
@@ -12,7 +13,7 @@ namespace RefactorThis.Services
         {
             _productGateway = productGateway;
         }
-        public Products GetProducts()
+        public List<Product> GetProducts()
         {
             return _productGateway.GetProducts();
         }

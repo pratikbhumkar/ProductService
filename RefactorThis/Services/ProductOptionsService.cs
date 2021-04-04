@@ -1,24 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Models;
 using RefactorThis.Services.Interfaces;
 
 namespace RefactorThis.Services
 {
-    public class ProductOptionService: IProductOptionsService
+    public class ProductOptionsService: IProductOptionsService
     {
         private readonly IProductOptionsGateway _productOptionsGateway;
-        public ProductOptionService(IProductOptionsGateway productOptionsGateway)
+        public ProductOptionsService(IProductOptionsGateway productOptionsGateway)
         {
             _productOptionsGateway = productOptionsGateway;
         }
-        public ProductOptions GetProductOptions()
+        public List<ProductOption> GetProductOptions(Guid productId)
         {
-            return _productOptionsGateway.GetAll();
+            return _productOptionsGateway.GetAll(productId);
         }
-        public ProductOption GetProductOption(Guid id)
+        public ProductOption GetProductOption(Guid productId, Guid id)
         {
-            return _productOptionsGateway.Get(id);
+            return _productOptionsGateway.Get(productId, id);
         }
         public void DeleteProductOption(Guid id)
         {

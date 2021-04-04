@@ -7,10 +7,14 @@ namespace RefactorThis.Gateways
 {
     public class ProductGateway: IProductGateway
     {
-        public Products GetProducts()
+        private readonly IProductOptionsGateway _productOptionsGateway;
+        public ProductGateway(IProductOptionsGateway productOptionsGateway)
         {
-            Products products = new Products();
-            products.Items = new List<Product>();
+            _productOptionsGateway = productOptionsGateway;
+        }
+        public List<Product> GetProducts()
+        {
+            List<Product> productList = new List<Product>();
             var conn = Helpers.NewConnection();
             conn.Open();
             var cmd = conn.CreateCommand();
@@ -20,9 +24,9 @@ namespace RefactorThis.Gateways
             while (rdr.Read())
             {
                 var id = Guid.Parse(rdr.GetString(0));
-                products.Items.Add(Get(id));
+                productList.Add(Get(id));
             }
-            return products;
+            return productList;
         }
 
         public int Update(Product product)
@@ -75,9 +79,6 @@ namespace RefactorThis.Gateways
 
         public int Delete(Guid id)
         {
-            foreach (var option in new ProductOptions(id).Items)
-                option.Delete();
-
             var conn = Helpers.NewConnection();
             conn.Open();
             var cmd = conn.CreateCommand();
