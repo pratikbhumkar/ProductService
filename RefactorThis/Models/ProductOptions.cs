@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace RefactorThis.Models
 {
@@ -12,8 +11,6 @@ namespace RefactorThis.Models
         public string Name { get; set; }
 
         public string Description { get; set; }
-
-        [JsonIgnore] public bool IsNew { get; set; }
         
     }
 }

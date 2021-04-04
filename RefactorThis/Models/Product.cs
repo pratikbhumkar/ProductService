@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 
 namespace RefactorThis.Models
 {
@@ -14,13 +13,5 @@ namespace RefactorThis.Models
         public decimal Price { get; set; }
 
         public decimal DeliveryPrice { get; set; }
-
-        [JsonIgnore] public bool IsNew { get; set; }
-
-        public Product()
-        {
-            Id = Guid.NewGuid();
-            IsNew = true;
-        }
     }
 }
