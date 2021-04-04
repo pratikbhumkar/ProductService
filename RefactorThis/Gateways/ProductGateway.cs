@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using RefactorThis.Context;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Models;
 
@@ -7,84 +10,55 @@ namespace RefactorThis.Gateways
 {
     public class ProductGateway: IProductGateway
     {
-        private readonly IProductOptionsGateway _productOptionsGateway;
-        public ProductGateway(IProductOptionsGateway productOptionsGateway)
+       public List<ProductDto> GetProducts()
         {
-            _productOptionsGateway = productOptionsGateway;
+            using var dbContext = new DatabaseContext();
+            dbContext.Database.EnsureCreated();
+            return dbContext.Products.ToList();
         }
-        public List<Product> GetProducts()
-        {
-            List<Product> productList = new List<Product>();
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = $"select id from Products";
 
-            var rdr = cmd.ExecuteReader();
-            while (rdr.Read())
+        public int Update(ProductDto product)
+        {
+            using var dbContext = new DatabaseContext();
+            dbContext.Database.EnsureCreated();
+            ProductDto result = dbContext.Products.SingleOrDefault(prod => prod.Id == product.Id);
+            if (result != null)
             {
-                var id = Guid.Parse(rdr.GetString(0));
-                productList.Add(Get(id));
+                result.Id = product.Id;
+                result.DeliveryPrice = product.DeliveryPrice;
+                result.Description = product.Description;
+                result.Name = product.Name;
+                result.Price = product.Price;
+                return dbContext.SaveChanges();
             }
-            return productList;
+            return -1;
         }
 
-        public int Update(Product product)
+        public ProductDto Get(Guid id)
         {
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-
-            cmd.CommandText = $"update Products set name = '{product.Name}', description = '{product.Description}', price = {product.Price}, deliveryprice = {product.DeliveryPrice} where id = '{product.Id}' collate nocase";
-
-            conn.Open();
-            return cmd.ExecuteNonQuery();
-        }
-
-        public Product Get(Guid id)
-        {
-            Product product = new Product();
-            product.IsNew = true;
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = $"select * from Products where id = '{id}' collate nocase";
-
-            var rdr = cmd.ExecuteReader();
-            if (!rdr.Read())
-                return product;
-
-            product.IsNew = false;
-            product.Id = Guid.Parse(rdr["Id"].ToString());
-            product.Name = rdr["Name"].ToString();
-            product.Description = (DBNull.Value == rdr["Description"]) ? null : rdr["Description"].ToString();
-            product.Price = decimal.Parse(rdr["Price"].ToString());
-            product.DeliveryPrice = decimal.Parse(rdr["DeliveryPrice"].ToString());
-            return product;
+            using var dbContext = new DatabaseContext();
+            var result = dbContext.Products.SingleOrDefault(prod => prod.Id == id);
+            if (result != null)
+            {
+                return result;
+            }
+            //Raise exception here & handle in controller for not found.
+            return null;
         }
         
-        public int Save(Product product)
+        public int Save(ProductDto product)
         {
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-
-            cmd.CommandText = product.IsNew
-                ? $"insert into Products (id, name, description, price, deliveryprice) values ('{product.Id}', '{product.Name}', '{product.Description}', {product.Price}, {product.DeliveryPrice})"
-                : $"update Products set name = '{product.Name}', description = '{product.Description}', price = {product.Price}, deliveryprice = {product.DeliveryPrice} where id = '{product.Id}' collate nocase";
-
-            conn.Open();
-            return cmd.ExecuteNonQuery();
+            using var dbContext = new DatabaseContext();
+            EntityEntry<ProductDto> result = dbContext.Products.Add(product);
+            dbContext.SaveChanges();
+            return (int) result.State;
         }
 
-        public int Delete(Guid id)
+        public int Delete(ProductDto product)
         {
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-
-            cmd.CommandText = $"delete from Products where id = '{id}' collate nocase";
-            return cmd.ExecuteNonQuery();
+            using var dbContext = new DatabaseContext();
+            EntityEntry<ProductDto> result = dbContext.Products.Remove(product);
+            return (int)result.State;
         }
     }
 }

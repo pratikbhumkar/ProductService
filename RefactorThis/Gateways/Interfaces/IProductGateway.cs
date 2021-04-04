@@ -6,10 +6,10 @@ namespace RefactorThis.Gateways.Interfaces
 {
     public interface IProductGateway
     {
-        List<Product> GetProducts();
-        Product Get(Guid id);
-        int Save(Product product);
-        int Update(Product product);
-        int Delete(Guid id);
+        List<ProductDto> GetProducts();
+        ProductDto Get(Guid id);
+        int Save(ProductDto product);
+        int Update(ProductDto product);
+        int Delete(ProductDto product);
     }
 }

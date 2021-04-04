@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,8 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RefactorThis.Context;
 using RefactorThis.Gateways;
 using RefactorThis.Gateways.Interfaces;
+using RefactorThis.Mappers;
 using RefactorThis.Services;
 using RefactorThis.Services.Interfaces;
 
@@ -31,10 +34,18 @@ namespace RefactorThis
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddEntityFrameworkSqlite().AddDbContext<DatabaseContext>();
             services.AddScoped<IProductService, ProductService>(); 
             services.AddScoped<IProductGateway, ProductGateway>(); 
             services.AddScoped<IProductOptionsGateway, ProductOptionsGateway>();
             services.AddScoped<IProductOptionsService, ProductOptionsService>();
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ProductMapper());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddSwaggerGen();
         }
 
@@ -52,7 +63,11 @@ namespace RefactorThis
             }
 
             app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
+            /*app.UseCors("AllowAll");*/
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
             app.UseRouting();
             app.UseAuthorization();
             app.UseSwagger();
