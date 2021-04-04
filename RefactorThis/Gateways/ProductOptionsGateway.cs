@@ -1,81 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using RefactorThis.Context;
 using RefactorThis.Gateways.Interfaces;
-using RefactorThis.Models;
+using RefactorThis.Models.DTO;
 
 namespace RefactorThis.Gateways
 {
     public class ProductOptionsGateway: IProductOptionsGateway
     {
-        public List<ProductOption> GetAll(Guid productId)
+        private readonly DatabaseContext _databaseContext;
+        public ProductOptionsGateway(DatabaseContext databaseContext)
         {
-            List<ProductOption> productOptions = new List<ProductOption>();
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-
-            cmd.CommandText = $"select id from productoptions where productid = '{productId}' collate nocase";
-
-            var rdr = cmd.ExecuteReader();
-            while (rdr.Read())
-            {
-                var id = Guid.Parse(rdr.GetString(0));
-                productOptions.Add(Get(productId, id));
-            }
-            return productOptions;
+            _databaseContext = databaseContext;
+            _databaseContext.Database.EnsureCreated();
+        }
+        public List<ProductOptionsDto> GetAll(Guid productId)
+        {
+            return _databaseContext.ProductOptions.Where(dto => dto.ProductId == productId).ToList();
         }
         
-        public ProductOption Get(Guid productId, Guid id)
+        public ProductOptionsDto Get(Guid productId, Guid id)
         {
-            ProductOption productOption = new ProductOption();
-            productOption.IsNew = true;
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-
-            cmd.CommandText = $"select * from productoptions";
-
-            var rdr = cmd.ExecuteReader();
-            if (!rdr.Read())
-                return null;
-
-            productOption.Id = Guid.Parse(rdr["Id"].ToString());
-            productOption.ProductId = Guid.Parse(rdr["ProductId"].ToString());
-            productOption.Name = rdr["Name"].ToString();
-            productOption.Description = (DBNull.Value == rdr["Description"]) ? null : rdr["Description"].ToString();
-            return productOption;
+            return _databaseContext.ProductOptions.FirstOrDefault(dto => dto.ProductId == productId && dto.Id == id);
         }
 
-        public int Save(ProductOption productOption)
+        public int Save(ProductOptionsDto productOption)
         {
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-
-            cmd.CommandText = productOption.IsNew
-                ? $"insert into productoptions (id, productid, name, description) values ('{productOption.Id}', '{productOption.ProductId}', '{productOption.Name}', '{productOption.Description}')"
-                : $"update productoptions set name = '{productOption.Name}', description = '{productOption.Description}' where id = '{productOption.Id}' collate nocase";
-
-            return cmd.ExecuteNonQuery();
+            EntityEntry<ProductOptionsDto> result = _databaseContext.ProductOptions.Add(productOption);
+            _databaseContext.SaveChanges();
+            return (int)result.State;
         }
 
-        public int Update(ProductOption productOption)
+        public int Update(ProductOptionsDto productOption)
         {
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = $"update productoptions set name = '{productOption.Name}', description = '{productOption.Description}' where id = '{productOption.Id}' collate nocase";
-            return cmd.ExecuteNonQuery();
+            ProductOptionsDto result = _databaseContext.ProductOptions
+                .SingleOrDefault(prodOption => prodOption.Id == productOption.Id);
+            if (result != null)
+            {
+                result.Id = productOption.Id;
+                result.Description = productOption.Description;
+                result.Name = productOption.Name;
+                result.ProductId = productOption.ProductId;
+                return _databaseContext.SaveChanges();
+            }
+            return -1;
         }
 
-        public int Delete(Guid id)
+        public int Delete(ProductOptionsDto productOption)
         {
-            var conn = Helpers.NewConnection();
-            conn.Open();
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = $"delete from productoptions where id = '{id}' collate nocase";
-            cmd.ExecuteReader();
-            return 1;
+            EntityEntry<ProductOptionsDto> result = _databaseContext.ProductOptions.Remove(productOption);
+            _databaseContext.SaveChanges();
+            return (int)result.State;
         }
     }
 }

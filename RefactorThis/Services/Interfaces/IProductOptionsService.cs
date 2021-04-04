@@ -6,10 +6,10 @@ namespace RefactorThis.Services.Interfaces
 {
     public interface IProductOptionsService
     {
-        public List<ProductOption> GetProductOptions(Guid productId);
-        public ProductOption GetProductOption(Guid productId, Guid id);
-        public int SaveProductOption(ProductOption productOption);
-        public int UpdateProductOption(ProductOption productOption);
-        public void DeleteProductOption(Guid id);
+        public List<ProductOptions> GetProductOptions(Guid productId);
+        public ProductOptions GetProductOption(Guid productId, Guid id);
+        public int SaveProductOption(ProductOptions productOptions);
+        public int UpdateProductOption(ProductOptions productOptions);
+        public int DeleteProductOption(Guid id);
     }
 }

@@ -57,12 +57,12 @@ namespace RefactorThis.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(Guid id, Product product)
+        [HttpPut]
+        public IActionResult Update(Product product)
         {
             try
             {
-                int result = _productService.UpdateProduct(id, product);
+                int result = _productService.UpdateProduct(product);
                 return Ok(result);
             }
             catch (Exception e)

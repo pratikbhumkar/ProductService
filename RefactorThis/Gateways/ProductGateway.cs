@@ -10,18 +10,21 @@ namespace RefactorThis.Gateways
 {
     public class ProductGateway: IProductGateway
     {
+        private readonly DatabaseContext _databaseContext;
+        public ProductGateway(DatabaseContext databaseContext)
+        {
+            _databaseContext = databaseContext;
+        }
        public List<ProductDto> GetProducts()
         {
-            using var dbContext = new DatabaseContext();
-            dbContext.Database.EnsureCreated();
-            return dbContext.Products.ToList();
+            _databaseContext.Database.EnsureCreated();
+            return _databaseContext.Products.ToList();
         }
 
         public int Update(ProductDto product)
         {
-            using var dbContext = new DatabaseContext();
-            dbContext.Database.EnsureCreated();
-            ProductDto result = dbContext.Products.SingleOrDefault(prod => prod.Id == product.Id);
+            _databaseContext.Database.EnsureCreated();
+            ProductDto result = _databaseContext.Products.SingleOrDefault(prod => prod.Id == product.Id);
             if (result != null)
             {
                 result.Id = product.Id;
@@ -29,15 +32,14 @@ namespace RefactorThis.Gateways
                 result.Description = product.Description;
                 result.Name = product.Name;
                 result.Price = product.Price;
-                return dbContext.SaveChanges();
+                return _databaseContext.SaveChanges();
             }
             return -1;
         }
 
         public ProductDto Get(Guid id)
         {
-            using var dbContext = new DatabaseContext();
-            var result = dbContext.Products.SingleOrDefault(prod => prod.Id == id);
+            ProductDto result = _databaseContext.Products.SingleOrDefault(prod => prod.Id == id);
             if (result != null)
             {
                 return result;
@@ -48,16 +50,15 @@ namespace RefactorThis.Gateways
         
         public int Save(ProductDto product)
         {
-            using var dbContext = new DatabaseContext();
-            EntityEntry<ProductDto> result = dbContext.Products.Add(product);
-            dbContext.SaveChanges();
+            EntityEntry<ProductDto> result = _databaseContext.Products.Add(product);
+            _databaseContext.SaveChanges();
             return (int) result.State;
         }
 
         public int Delete(ProductDto product)
         {
-            using var dbContext = new DatabaseContext();
-            EntityEntry<ProductDto> result = dbContext.Products.Remove(product);
+            EntityEntry<ProductDto> result = _databaseContext.Products.Remove(product);
+            _databaseContext.SaveChanges();
             return (int)result.State;
         }
     }

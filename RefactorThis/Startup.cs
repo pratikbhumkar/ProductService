@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,9 +36,11 @@ namespace RefactorThis
             services.AddScoped<IProductGateway, ProductGateway>(); 
             services.AddScoped<IProductOptionsGateway, ProductOptionsGateway>();
             services.AddScoped<IProductOptionsService, ProductOptionsService>();
+            services.AddSingleton(Configuration);
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new ProductMapper());
+                mc.AddProfile(new ProductOptionsMapper());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
@@ -74,7 +73,7 @@ namespace RefactorThis
             app.UseSwaggerUI(c =>
             {
                 string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
-                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "WebJetMoviesBackendAPI");
+                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "RefactorThis");
             });
             app.UseEndpoints(endpoints =>
             {

@@ -14,7 +14,7 @@ namespace RefactorThis.Controllers
         {
             _productOptionsService = productOptionsService;
         }
-        [HttpGet("{productId}/options")]
+        [HttpGet]
         public IActionResult GetOptions(Guid productId)
         {
             try
@@ -43,11 +43,11 @@ namespace RefactorThis.Controllers
         }
 
         [HttpPost("{productId}/options")]
-        public IActionResult CreateOption(Guid productId, ProductOption option)
+        public IActionResult CreateOption(Guid productId, ProductOptions options)
         {
             try
             {
-                var result = _productOptionsService.SaveProductOption(option);
+                var result = _productOptionsService.SaveProductOption(options);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -56,12 +56,12 @@ namespace RefactorThis.Controllers
             }
         }
 
-        [HttpPut("{productId}/options/{id}")]
-        public IActionResult UpdateOption(Guid id, ProductOption option)
+        [HttpPut]
+        public IActionResult UpdateOption(Guid id, ProductOptions options)
         {
             try
             {
-                var result = _productOptionsService.UpdateProductOption(option);
+                var result = _productOptionsService.UpdateProductOption(options);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace RefactorThis.Controllers
             }
         }
 
-        [HttpDelete("{productId}/options/{id}")]
+        [HttpDelete]
         public IActionResult DeleteOption(Guid id)
         {
             try

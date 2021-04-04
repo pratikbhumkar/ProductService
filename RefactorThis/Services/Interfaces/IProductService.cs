@@ -9,7 +9,7 @@ namespace RefactorThis.Services
         List<Product> GetProducts();
         Product GetProduct(Guid id);
         int SaveProduct(Product product);
-        int UpdateProduct(Guid id, Product product);
+        int UpdateProduct(Product product);
         int DeleteProduct(Guid id);
     }
 }

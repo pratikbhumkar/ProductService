@@ -35,7 +35,7 @@ namespace RefactorThis.Services
             return _productGateway.Save(productDto);
         }
 
-        public int UpdateProduct(Guid id, Product product)
+        public int UpdateProduct(Product product)
         {
             ProductDto productDto = _mapper.Map<ProductDto>(product);
             return _productGateway.Update(productDto);

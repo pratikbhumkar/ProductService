@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoMapper;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Models;
+using RefactorThis.Models.DTO;
 using RefactorThis.Services.Interfaces;
 
 namespace RefactorThis.Services
@@ -9,29 +11,41 @@ namespace RefactorThis.Services
     public class ProductOptionsService: IProductOptionsService
     {
         private readonly IProductOptionsGateway _productOptionsGateway;
-        public ProductOptionsService(IProductOptionsGateway productOptionsGateway)
+        private readonly IMapper _mapper;
+        public ProductOptionsService(IProductOptionsGateway productOptionsGateway, IMapper mapper)
         {
             _productOptionsGateway = productOptionsGateway;
+            _mapper = mapper;
         }
-        public List<ProductOption> GetProductOptions(Guid productId)
+        public List<ProductOptions> GetProductOptions(Guid productId)
         {
-            return _productOptionsGateway.GetAll(productId);
+            List<ProductOptionsDto> productOptionsDtos = _productOptionsGateway.GetAll(productId);
+            List<ProductOptions> productOptionsList = _mapper.Map<List<ProductOptions>>(productOptionsDtos);
+            return productOptionsList;
         }
-        public ProductOption GetProductOption(Guid productId, Guid id)
+        public ProductOptions GetProductOption(Guid productId, Guid id)
         {
-            return _productOptionsGateway.Get(productId, id);
+            ProductOptionsDto productOptionsDto = _productOptionsGateway.Get(productId, id);
+            ProductOptions productOptions = _mapper.Map<ProductOptions>(productOptionsDto);
+            return productOptions;
         }
-        public void DeleteProductOption(Guid id)
+        public int DeleteProductOption(Guid id)
         {
-            _productOptionsGateway.Delete(id);
+            ProductOptionsDto productOptionsDto = new ProductOptionsDto()
+            {
+                Id = id
+            };
+            return _productOptionsGateway.Delete(productOptionsDto);
         }
-        public int SaveProductOption(ProductOption productOption)
+        public int SaveProductOption(ProductOptions productOptions)
         {
-            return _productOptionsGateway.Save(productOption);
+            ProductOptionsDto productOptionsDto = _mapper.Map<ProductOptionsDto>(productOptions);
+            return _productOptionsGateway.Save(productOptionsDto);
         }
-        public int UpdateProductOption(ProductOption productOption)
+        public int UpdateProductOption(ProductOptions productOptions)
         {
-            return _productOptionsGateway.Update(productOption);
+            ProductOptionsDto productOptionsDto = _mapper.Map<ProductOptionsDto>(productOptions);
+            return _productOptionsGateway.Update(productOptionsDto);
         }
     }
 }

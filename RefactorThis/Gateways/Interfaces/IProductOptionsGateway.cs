@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using RefactorThis.Models;
+using RefactorThis.Models.DTO;
 
 namespace RefactorThis.Gateways.Interfaces
 {
     public interface IProductOptionsGateway
     {
-        List<ProductOption> GetAll(Guid productId);
-        ProductOption Get(Guid productId, Guid id);
-        int Save(ProductOption productOption);
-        int Update(ProductOption productOption);
-        int Delete(Guid id);
+        List<ProductOptionsDto> GetAll(Guid productId);
+        ProductOptionsDto Get(Guid productId, Guid id);
+        int Save(ProductOptionsDto productOption);
+        int Update(ProductOptionsDto productOption);
+        int Delete(ProductOptionsDto productOption);
     }
 }
