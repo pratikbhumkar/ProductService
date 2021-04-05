@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RefactorThis.Context;
 using RefactorThis.Gateways.Interfaces;
-using RefactorThis.Models.DTO;
+using RefactorThis.Models.Entities;
+
 
 namespace RefactorThis.Gateways
 {
@@ -16,26 +16,26 @@ namespace RefactorThis.Gateways
             _databaseContext = databaseContext;
             _databaseContext.Database.EnsureCreated();
         }
-        public List<ProductOptionsDto> GetAll(Guid productId)
+        public List<ProductOptions> GetAll(Guid productId)
         {
-            return _databaseContext.ProductOptions.Where(dto => dto.ProductId == productId).ToList();
+            List<ProductOptions> productOptionsprods = _databaseContext.ProductOptions.Where(prod => prod.ProductId == productId).ToList();
+            return productOptionsprods;
         }
         
-        public ProductOptionsDto Get(Guid productId, Guid id)
+        public ProductOptions Get(Guid productId, Guid id)
         {
-            return _databaseContext.ProductOptions.FirstOrDefault(dto => dto.ProductId == productId && dto.Id == id);
+            return _databaseContext.ProductOptions.FirstOrDefault(prod => prod.ProductId == productId && prod.Id == id);
         }
 
-        public int Save(ProductOptionsDto productOption)
+        public int Save(ProductOptions productOption)
         {
-            EntityEntry<ProductOptionsDto> result = _databaseContext.ProductOptions.Add(productOption);
-            _databaseContext.SaveChanges();
-            return (int)result.State;
+            _databaseContext.ProductOptions.Add(productOption);
+            return _databaseContext.SaveChanges();
         }
 
-        public int Update(ProductOptionsDto productOption)
+        public int Update(ProductOptions productOption)
         {
-            ProductOptionsDto result = _databaseContext.ProductOptions
+            ProductOptions result = _databaseContext.ProductOptions
                 .SingleOrDefault(prodOption => prodOption.Id == productOption.Id);
             if (result != null)
             {
@@ -48,11 +48,10 @@ namespace RefactorThis.Gateways
             return -1;
         }
 
-        public int Delete(ProductOptionsDto productOption)
+        public int Delete(ProductOptions productOption)
         {
-            EntityEntry<ProductOptionsDto> result = _databaseContext.ProductOptions.Remove(productOption);
-            _databaseContext.SaveChanges();
-            return (int)result.State;
+            _databaseContext.ProductOptions.Remove(productOption);
+            return _databaseContext.SaveChanges();
         }
     }
 }

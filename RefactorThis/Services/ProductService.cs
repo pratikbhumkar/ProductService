@@ -3,51 +3,72 @@ using System.Collections.Generic;
 using AutoMapper;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Models;
+using RefactorThis.Models.Entities;
+using RefactorThis.Services.Interfaces;
 
 namespace RefactorThis.Services
 {
     public class ProductService: IProductService
     {
         private readonly IProductGateway _productGateway;
+        private readonly IProductOptionsGateway _productOptionsGateway;
         private readonly IMapper _mapper;
-        public ProductService(IProductGateway productGateway, IMapper mapper)
+        public ProductService(IProductGateway productGateway, IMapper mapper, IProductOptionsGateway productOptionsGateway)
         {
             _productGateway = productGateway;
             _mapper = mapper;
+            _productOptionsGateway = productOptionsGateway;
         }
-        public List<Product> GetProducts()
+        public List<ProductDto> GetProducts()
         {
-            List<ProductDto> productDtoList = _productGateway.GetProducts();
-            List<Product> productList = _mapper.Map<List<Product>>(productDtoList);
+            List<Products> productDtoList = _productGateway.GetProducts();
+            List<ProductDto> productList = _mapper.Map<List<ProductDto>>(productDtoList);
             return productList;
         }
 
-        public Product GetProduct(Guid id)
+        public ProductDto GetProduct(Guid id)
         {
-            ProductDto productDto = _productGateway.Get(id);
-            Product product = _mapper.Map<Product>(productDto);
-            return product;
+            Products product = _productGateway.Get(id);
+            ProductDto productDto = _mapper.Map<ProductDto>(product);
+            return productDto;
         }
 
-        public int SaveProduct(Product product)
+        public ProductDto GetProductByName(string name)
         {
+            Products product = _productGateway.GetByName(name);
             ProductDto productDto = _mapper.Map<ProductDto>(product);
-            return _productGateway.Save(productDto);
+            return productDto;
         }
 
-        public int UpdateProduct(Product product)
+        public int SaveProduct(ProductDto productDto)
         {
-            ProductDto productDto = _mapper.Map<ProductDto>(product);
-            return _productGateway.Update(productDto);
+            Products products = _mapper.Map<Products>(productDto);
+            return _productGateway.Save(products);
+        }
+
+        public int UpdateProduct(ProductDto productDto)
+        {
+            Products products = _mapper.Map<Products>(productDto);
+            return _productGateway.Update(products);
         }
         
         public int DeleteProduct(Guid id)
         {
-            ProductDto productDto = new ProductDto()
+            Products productDto = new Products()
             {
                 Id = id
             };
+            DeleteCorrespondingProductOptions(id);
             return _productGateway.Delete(productDto);
+        }
+
+        private void DeleteCorrespondingProductOptions(Guid id)
+        {
+           List<ProductOptions> productOptionsList = _productOptionsGateway.GetAll(id);
+           foreach (ProductOptions productOption in productOptionsList)
+           {
+               _productOptionsGateway.Delete(productOption);
+           }
         }
     }
 }

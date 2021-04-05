@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using RefactorThis.Models;
-using RefactorThis.Services;
+using RefactorThis.Services.Interfaces;
 
 namespace RefactorThis.Controllers
 {
@@ -29,6 +29,20 @@ namespace RefactorThis.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Get(string name)
+        {
+            try
+            {
+                var products = _productService.GetProducts();
+                return Ok(products);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpGet("{id}")]
         public IActionResult Get(Guid id)
         {
@@ -44,7 +58,7 @@ namespace RefactorThis.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(Product product)
+        public IActionResult Post(ProductDto product)
         {
             try
             {
@@ -58,7 +72,7 @@ namespace RefactorThis.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(Product product)
+        public IActionResult Update(ProductDto product)
         {
             try
             {

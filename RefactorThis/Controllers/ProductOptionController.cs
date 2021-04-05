@@ -43,7 +43,7 @@ namespace RefactorThis.Controllers
         }
 
         [HttpPost("{productId}/options")]
-        public IActionResult CreateOption(Guid productId, ProductOptions options)
+        public IActionResult CreateOption(Guid productId, ProductOptionsDto options)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace RefactorThis.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateOption(Guid id, ProductOptions options)
+        public IActionResult UpdateOption(ProductOptionsDto options)
         {
             try
             {

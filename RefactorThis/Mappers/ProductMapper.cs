@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using RefactorThis.Models;
+using RefactorThis.Models.Entities;
 
 namespace RefactorThis.Mappers
 {
@@ -7,7 +8,7 @@ namespace RefactorThis.Mappers
     {
         public ProductMapper()
         {
-            CreateMap<Product, ProductDto>()
+            CreateMap<ProductDto, Products>()
                 .ReverseMap();
         }
     }

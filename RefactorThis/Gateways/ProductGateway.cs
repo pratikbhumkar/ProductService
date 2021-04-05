@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RefactorThis.Context;
 using RefactorThis.Gateways.Interfaces;
-using RefactorThis.Models;
+using RefactorThis.Models.Entities;
 
 namespace RefactorThis.Gateways
 {
@@ -15,16 +14,18 @@ namespace RefactorThis.Gateways
         {
             _databaseContext = databaseContext;
         }
-       public List<ProductDto> GetProducts()
+       public List<Products> GetProducts()
         {
             _databaseContext.Database.EnsureCreated();
-            return _databaseContext.Products.ToList();
+            var prods =  _databaseContext.Products;
+            return prods.ToList();
         }
 
-        public int Update(ProductDto product)
+        public int Update(Products product)
         {
             _databaseContext.Database.EnsureCreated();
-            ProductDto result = _databaseContext.Products.SingleOrDefault(prod => prod.Id == product.Id);
+            Products result = _databaseContext.Products
+                .FirstOrDefault(prod => prod.Id == product.Id);
             if (result != null)
             {
                 result.Id = product.Id;
@@ -37,9 +38,9 @@ namespace RefactorThis.Gateways
             return -1;
         }
 
-        public ProductDto Get(Guid id)
+        public Products Get(Guid id)
         {
-            ProductDto result = _databaseContext.Products.SingleOrDefault(prod => prod.Id == id);
+            Products result = _databaseContext.Products.SingleOrDefault(prod => prod.Id == id);
             if (result != null)
             {
                 return result;
@@ -47,19 +48,26 @@ namespace RefactorThis.Gateways
             //Raise exception here & handle in controller for not found.
             return null;
         }
-        
-        public int Save(ProductDto product)
+        public Products GetByName(string name)
         {
-            EntityEntry<ProductDto> result = _databaseContext.Products.Add(product);
-            _databaseContext.SaveChanges();
-            return (int) result.State;
+            Products result = _databaseContext.Products.SingleOrDefault(prod => prod.Name == name);
+            if (result != null)
+            {
+                return result;
+            }
+            //Raise exception here & handle in controller for not found.
+            return null;
+        }
+        public int Save(Products product)
+        {
+            _databaseContext.Products.Add(product);
+            return _databaseContext.SaveChanges();
         }
 
-        public int Delete(ProductDto product)
+        public int Delete(Products product)
         {
-            EntityEntry<ProductDto> result = _databaseContext.Products.Remove(product);
-            _databaseContext.SaveChanges();
-            return (int)result.State;
+            _databaseContext.Products.Remove(product);
+            return _databaseContext.SaveChanges();
         }
     }
 }
