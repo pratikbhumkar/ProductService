@@ -3,3 +3,5 @@ RefactorThis/.idea/
 RefactorThis/bin/
 RefactorThis/obj/
 RefactorThis/.vs/
+RefactorThis/.vscode/launch.json
+RefactorThis/.vscode/tasks.json

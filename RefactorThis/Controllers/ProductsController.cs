@@ -16,7 +16,7 @@ namespace RefactorThis.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetProducts()
         {
             try
             {
@@ -29,8 +29,8 @@ namespace RefactorThis.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult Get(string name)
+        [HttpGet("{name}")]
+        public IActionResult GetProductByName(string name)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace RefactorThis.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(Guid id)
+        public IActionResult GetProductById(Guid id)
         {
             try
             {
