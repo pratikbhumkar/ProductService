@@ -16,25 +16,16 @@ namespace RefactorThis.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProducts()
+        public IActionResult GetProducts([FromQuery(Name = "name")] string name)
         {
             try
             {
-                var products = _productService.GetProducts();
-                return Ok(products);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
-        }
-
-        [HttpGet("{name}")]
-        public IActionResult GetProductByName(string name)
-        {
-            try
-            {
-                var products = _productService.GetProducts();
+                if (String.IsNullOrEmpty(name))
+                {
+                    var productList = _productService.GetProducts();
+                    return Ok(productList);
+                }
+                var products = _productService.GetProductByName(name);
                 return Ok(products);
             }
             catch (Exception e)
