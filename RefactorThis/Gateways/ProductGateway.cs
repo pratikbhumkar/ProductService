@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RefactorThis.Context;
+using RefactorThis.Exceptions;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Models.Entities;
 
@@ -35,7 +36,7 @@ namespace RefactorThis.Gateways
                 result.Price = product.Price;
                 return _databaseContext.SaveChanges();
             }
-            return -1;
+            throw new NotFoundException("Product Not found");
         }
 
         public Products Get(Guid id)
@@ -45,8 +46,8 @@ namespace RefactorThis.Gateways
             {
                 return result;
             }
-            //Raise exception here & handle in controller for not found.
-            return null;
+
+            throw new NotFoundException("Product Not found");
         }
         public Products GetByName(string name)
         {
@@ -55,8 +56,7 @@ namespace RefactorThis.Gateways
             {
                 return result;
             }
-            //Raise exception here & handle in controller for not found.
-            return null;
+            throw new NotFoundException("Product Not found");
         }
         public int Save(Products product)
         {

@@ -58,6 +58,8 @@ namespace RefactorThis.Services
             {
                 Id = id
             };
+            //Deleting product options by calling method to delete options.
+            //Because if I want to use ef for that, I might have to alter database.
             DeleteCorrespondingProductOptions(id);
             return _productGateway.Delete(productDto);
         }

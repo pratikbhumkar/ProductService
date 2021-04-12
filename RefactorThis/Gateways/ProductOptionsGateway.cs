@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RefactorThis.Context;
+using RefactorThis.Exceptions;
 using RefactorThis.Gateways.Interfaces;
 using RefactorThis.Models.Entities;
 
@@ -18,13 +19,22 @@ namespace RefactorThis.Gateways
         }
         public List<ProductOptions> GetAll(Guid productId)
         {
-            List<ProductOptions> productOptionsprods = _databaseContext.ProductOptions.Where(prod => prod.ProductId == productId).ToList();
-            return productOptionsprods;
+            List<ProductOptions> productOptions = _databaseContext.ProductOptions.Where(prod => prod.ProductId == productId).ToList();
+            if (productOptions.Count>0)
+            {
+                return productOptions;
+            }
+            throw new NotFoundException("Product Options Not found");
         }
         
         public ProductOptions Get(Guid productId, Guid id)
         {
-            return _databaseContext.ProductOptions.FirstOrDefault(prod => prod.ProductId == productId && prod.Id == id);
+            ProductOptions options = _databaseContext.ProductOptions.SingleOrDefault(prod => prod.ProductId == productId && prod.Id == id);
+            if (options != null)
+            {
+                return options;
+            }
+            throw new NotFoundException("Product Option Not found");
         }
 
         public int Save(ProductOptions productOption)
@@ -45,7 +55,7 @@ namespace RefactorThis.Gateways
                 result.ProductId = productOption.ProductId;
                 return _databaseContext.SaveChanges();
             }
-            return -1;
+            throw new NotFoundException("Product Option Not found");
         }
 
         public int Delete(ProductOptions productOption)

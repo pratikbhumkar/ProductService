@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using RefactorThis.Exceptions;
 using RefactorThis.Models;
 using RefactorThis.Services.Interfaces;
 
@@ -25,8 +26,13 @@ namespace RefactorThis.Controllers
                     var productList = _productService.GetProducts();
                     return Ok(productList);
                 }
+
                 var products = _productService.GetProductByName(name);
                 return Ok(products);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound(nfe.Message);
             }
             catch (Exception e)
             {
@@ -41,6 +47,10 @@ namespace RefactorThis.Controllers
             {
                 var product = _productService.GetProduct(id);
                 return Ok(product);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound(nfe.Message);
             }
             catch (Exception e)
             {
@@ -70,6 +80,10 @@ namespace RefactorThis.Controllers
                 int result = _productService.UpdateProduct(product);
                 return Ok(result);
             }
+            catch (NotFoundException nfe)
+            {
+                return NotFound(nfe.Message);
+            }
             catch (Exception e)
             {
                 return StatusCode(500, e.Message);
@@ -83,6 +97,10 @@ namespace RefactorThis.Controllers
             {
                 int result = _productService.DeleteProduct(id);
                 return Ok(result);
+            }
+            catch (NotFoundException nfe)
+            {
+                return NotFound(nfe.Message);
             }
             catch (Exception e)
             {
