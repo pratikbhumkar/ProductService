@@ -5,6 +5,10 @@ Please evaluate and refactor areas where you think can be improved.
 
 Consider all aspects of good software engineering and show us how you'll make it #beautiful and make it a production ready code.
 
+## Instructions to run
+- Run `docker-compose up`.
+- Open browser and go to `http://localhost:9000/swagger/index.html`.
+
 ## Getting started for applicants
 
 There should be these endpoints:
